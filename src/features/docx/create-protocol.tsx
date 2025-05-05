@@ -15,34 +15,8 @@ function formatDateToDMY(isoDateString: string) {
     // Форматируем в dd.mm.yyyy
     return `${day}.${month}.${year}`;
 }
-interface AnimalData {
-    id: string;
-    sampleId: string;
-    ryr1: string;
-    esr: string;
-    igf2: string;
-}
-const animalData: AnimalData[] = [
-    { id: "BY2000038492I3", sampleId: "c 10110", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY200003849222", sampleId: "c 10111", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY20000384923l", sampleId: "c 10112", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY200003849240", sampleId: "c 10113", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY200003849l70", sampleId: "c 10114", ryr1: "NN", esr: "AA", igf2: "QQ" },
-    { id: "BY200003849l 89", sampleId: "c 10115", ryr1: "NN", esr: "AA", igf2: "Qq" },
-    { id: "BY200003849198", sampleId: "c 10116", ryr1: "NO", esr: "AA", igf2: "Qq" },
-    { id: "BY200003849204", sampleId: "c 10117", ryr1: "NN", esr: "AB", igf2: "Qq" },
-    { id: "BY200003849295", sampleId: "c 10118", ryr1: "NN", esr: "BB", igf2: "QQ" },
-    { id: "BY20000384930l", sampleId: "c 10119", ryr1: "NN", esr: "AB", igf2: "QQ" },
-    { id: "BY200003849310", sampleId: "c 10120", ryr1: "NN", esr: "AB", igf2: "QQ" },
-    { id: "BY200003849329", sampleId: "c 10121", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY200003849259", sampleId: "c 10122", ryr1: "NN", esr: "AA", igf2: "Qq" },
-    { id: "BY200003849268", sampleId: "c 10123", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY200003849277", sampleId: "c 10124", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY200003849286", sampleId: "c 10125", ryr1: "NN", esr: "AA", igf2: "Qq" },
-    { id: "BY200003849453", sampleId: "c 10126", ryr1: "NN", esr: "AA", igf2: "Qq" },
-    { id: "BY200003849462", sampleId: "c 10127", ryr1: "NN", esr: "AA", igf2: "qq" },
-    { id: "BY20000384947 l", sampleId: "c 10128", ryr1: "NN", esr: "AA", igf2: "qq" },
-];
+
+
 const createProtocol = async () => {
 
 
@@ -54,6 +28,17 @@ const createProtocol = async () => {
                         margin: { top: 1000, right: 1000, bottom: 1000, left: 1000 },
                     }
                 },
+                // footers: {
+                //     default: new Footer({
+                //         children: [
+                //             new Paragraph({
+                //                 children: [
+                //                     new TextRun('п. 7.8 РК 420/11-03-02 Протокол № ${data.id}    Страница 1 из 2')
+                //                 ]
+                //             })
+                //         ]
+                //     })
+                // },
                 children: [
                     ...createHeader(),
                     ...createProtocolTitle(),
@@ -214,6 +199,11 @@ const createFooter = () => {
 };
 
 const createTableProtocol = () => {
+
+    // const uniqueDisease = [
+    //     ...new Set()
+    // ]
+
     return [
         new TableRow({
             children: [
@@ -240,7 +230,7 @@ const createTableProtocol = () => {
                         text: "Исследуемые показатели (хозяйственно-ценные признаки и наследственные заболевания)",
                         alignment: AlignmentType.CENTER
                     })],
-                    columnSpan: 3,
+                    columnSpan: data.researchs[1].researchOnDiseases.length,
                 }),
             ],
         }),
@@ -253,71 +243,80 @@ const createTableProtocol = () => {
                         text: "Исследуемый ген и генотип животного",
                         alignment: AlignmentType.CENTER
                     })],
-                    columnSpan: 3,
+                    columnSpan: data.researchs[1].researchOnDiseases.length,
                 }),
             ],
         }),
         // Subheader row 2 - Gene names (RYR1, ESR, IGF2)
         new TableRow({
-            children: [
-                // Первые 3 ячейки объединены rowSpan
-                new TableCell({
-                    children: [new Paragraph({ text: "RYR1", alignment: AlignmentType.CENTER })],
-                }),
-                new TableCell({
-                    children: [new Paragraph({ text: "ESR", alignment: AlignmentType.CENTER })],
-                }),
-                new TableCell({
-                    children: [new Paragraph({ text: "IGF2", alignment: AlignmentType.CENTER })],
-                }),
-            ],
+            children: data.researchs[1].researchOnDiseases.map((disease) => new TableCell({
+                children: [new Paragraph({ text: disease.researchDisease.diseaseType.name, alignment: AlignmentType.CENTER })]
+            }))
         }),
-        // Subheader row 3 - Column numbers (*4*, *5*, *6*)
         new TableRow({
             children: [
-                // Первые 3 ячейки объединены rowSpan
                 new TableCell({
-                    children: [new Paragraph({ text: "1", alignment: AlignmentType.CENTER, })],
+                    children: [new Paragraph({
+                        children: [new TextRun({
+                            text: '1',
+                            italics: true
+                        })],
+                        alignment: AlignmentType.CENTER
+                    })],
                 }),
                 new TableCell({
-                    children: [new Paragraph({ text: "2", alignment: AlignmentType.CENTER })],
+                    children: [new Paragraph({
+                        children: [new TextRun({
+                            text: '2',
+                            italics: true
+                        })],
+                        alignment: AlignmentType.CENTER
+                    })],
                 }),
                 new TableCell({
-                    children: [new Paragraph({ text: "3", alignment: AlignmentType.CENTER })],
+                    children: [new Paragraph({
+                        children: [new TextRun({
+                            text: '3',
+                            italics: true
+                        })],
+                        alignment: AlignmentType.CENTER
+                    })],
                 }),
-                new TableCell({
-                    children: [new Paragraph({ text: "4", alignment: AlignmentType.CENTER })],
-                }),
-                new TableCell({
-                    children: [new Paragraph({ text: "5", alignment: AlignmentType.CENTER })],
-                }),
-                new TableCell({
-                    children: [new Paragraph({ text: "6", alignment: AlignmentType.CENTER })],
-                }),
+                ...data.researchs[1].researchOnDiseases.map((value, index) => (
+                    new TableCell({
+                        children: [
+                            new Paragraph({
+                                children: [
+                                    new TextRun({
+                                        text: (index + 4).toString(),
+                                        italics: true,
+                                    })
+                                ],
+                                alignment: AlignmentType.CENTER
+                            })
+                        ],
+                    })
+                )),
             ],
         }),
-        // Data rows
-        ...animalData.map((item, index) => (
+
+        ...data.researchs.map((item, index) => (
             new TableRow({
                 children: [
                     new TableCell({
                         children: [new Paragraph({ text: (index + 1).toString(), alignment: AlignmentType.CENTER })],
                     }),
                     new TableCell({
-                        children: [new Paragraph({ text: item.id, alignment: AlignmentType.CENTER })],
+                        children: [new Paragraph({ text: item.animalResearch.indNumber, alignment: AlignmentType.CENTER })],
                     }),
                     new TableCell({
-                        children: [new Paragraph({ text: item.sampleId, alignment: AlignmentType.CENTER })],
+                        children: [new Paragraph({ text: item.animalResearch.id.toString(), alignment: AlignmentType.CENTER })],
                     }),
-                    new TableCell({
-                        children: [new Paragraph({ text: item.ryr1, alignment: AlignmentType.CENTER })],
-                    }),
-                    new TableCell({
-                        children: [new Paragraph({ text: item.esr, alignment: AlignmentType.CENTER })],
-                    }),
-                    new TableCell({
-                        children: [new Paragraph({ text: item.igf2, alignment: AlignmentType.CENTER })],
-                    }),
+                    ...item.researchOnDiseases.map((disease) => (
+                        new TableCell({
+                            children: [new Paragraph({ text: disease.researchDisease.diseaseDescription.name, alignment: AlignmentType.CENTER })],
+                        })
+                    ))
                 ],
             })
         )),
